@@ -42,3 +42,8 @@ spring:
           ruleType: gw_api_group
       transport:
         dashboard: sentinel-server:8858
+
+  redis:
+    host: redis-server
+    port: 6380
+    password: Ltd3411??
