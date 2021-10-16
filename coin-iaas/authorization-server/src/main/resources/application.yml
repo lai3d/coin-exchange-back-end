@@ -7,3 +7,7 @@ spring:
     nacos:
       discovery:
         server-addr: nacos-server:8848
+  redis:
+    host: redis-server
+    port: 6380
+    password: Ltd3411??
