@@ -8,14 +8,6 @@
     <artifactId>coin-exchange</artifactId>
     <packaging>pom</packaging>
     <version>1.0</version>
-
-    <parent>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <groupId>org.springframework.boot</groupId>
-        <version>2.2.3.RELEASE</version>
-        <relativePath/>
-    </parent>
-
     <modules>
         <module>coin-iaas</module>
         <module>coin-common</module>
@@ -28,6 +20,13 @@
         <module>match-engine</module>
         <module>exchange-engine</module>
     </modules>
+
+    <parent>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <version>2.2.7.RELEASE</version>
+        <relativePath/>
+    </parent>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
