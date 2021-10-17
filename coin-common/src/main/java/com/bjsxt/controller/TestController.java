@@ -1,7 +1,10 @@
 package com.bjsxt.controller;
 
 import com.bjsxt.model.R;
+import com.bjsxt.model.WebLog;
 import io.swagger.annotations.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -10,6 +13,9 @@ import java.util.Date;
 @RestController
 @Api(tags = "coin-common 里面测试的接口")
 public class TestController {
+
+    @Autowired
+    private RedisTemplate<String,Object> redisTemplate ;
 
     @GetMapping("/common/test")
     @ApiOperation(value = "测试方法", authorizations = {@Authorization("Authorization")})
@@ -25,5 +31,16 @@ public class TestController {
     @ApiOperation(value = "日志格式化测试", authorizations = {@Authorization("Authorization")})
     public R<Date> testMethod() {
         return R.ok(new Date());
+    }
+
+    @GetMapping("/redis/test")
+    @ApiOperation(value = "redis测试",authorizations = {@Authorization("Authorization")})
+    public R<String> testRedis(){
+        WebLog webLog = new WebLog();
+        webLog.setResult("ok");
+        webLog.setMethod("com.bjsxt.domain.WebLog.testRedis");
+        webLog.setUsername("1110");
+        redisTemplate.opsForValue().set("com.bjsxt.domain.WebLog", webLog);
+        return R.ok("OK");
     }
 }
