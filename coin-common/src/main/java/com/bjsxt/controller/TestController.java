@@ -5,6 +5,8 @@ import io.swagger.annotations.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
+
 @RestController
 @Api(tags = "coin-common 里面测试的接口")
 public class TestController {
@@ -17,5 +19,11 @@ public class TestController {
     })
     public R<String> testMethod(String param, String param1) {
         return R.ok("ok");
+    }
+
+    @GetMapping("/common/date")
+    @ApiOperation(value = "日志格式化测试", authorizations = {@Authorization("Authorization")})
+    public R<Date> testMethod() {
+        return R.ok(new Date());
     }
 }
