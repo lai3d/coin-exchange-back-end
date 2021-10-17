@@ -1,0 +1,65 @@
+server:
+  port: 8080
+spring:
+  profiles:
+    active: dev
+
+  application:
+    name: coin-common
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: nacos-server:8848
+      config:
+        enabled: false
+        file-extension: yaml
+    sentinel:
+      transport:
+        dashboard: sentinel-dashboard:8858
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql-server:3307/coin-exchange
+    username: root
+    password: Ltd3411??
+  redis:
+    host: redis-server
+    port: 6380
+    password: Ltd3411??
+
+
+swagger2:
+  basePackage: com.bjsxt.controller
+  name: liangtiandong
+  url: https://github.com/liangtiandong-cn
+  email: liangtiandong@live.com
+  title: coin-common模型的测试
+  description: coin-common 模块测试开发
+  version: 2.0
+  termsOfServiceUrl: www.bjsxt.com
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:/mapper/*Mapper.xml
+jetcache:
+  statIntervalMinutes: 15
+  areaInCacheName: false
+  local:
+    default:
+      type: linkedhashmap
+      keyConvertor: fastjson
+  remote:
+    default:
+      type: redis
+      keyConvertor: fastjson
+      valueEncoder: kryo
+      valueDecoder: kryo
+      poolConfig:
+        minIdle: 5
+        maxIdle: 20
+        maxTotal: 50
+      host: ${spring.redis.host}
+      port: ${spring.redis.port}
+      password:  ${spring.redis.password}
