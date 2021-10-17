@@ -19,6 +19,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -57,7 +58,26 @@ public class UserServiceDetailsServiceImpl implements UserDetailsService {
     }
 
     private UserDetails loadMemberUserByUsername(String username) {
-        return null;
+        return jdbcTemplate.queryForObject(LoginConstant.QUERY_MEMBER_SQL, new RowMapper<User>() {
+            @Override
+            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                if (rs.wasNull()) {
+                    throw new UsernameNotFoundException("用户：" + username + "不存在");
+                }
+                long id = rs.getLong("id"); // 会员的id
+                String password = rs.getString("password");// 会员的登录密码
+                int status = rs.getInt("status"); // 会员的状态
+                return new User(
+                        String.valueOf(id),
+                        password,
+                        status == 1,
+                        true,
+                        true,
+                        true,
+                        Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"))
+                );
+            }
+        }, username, username);
     }
 
     private UserDetails loadSysUserByUsername(String username) {
