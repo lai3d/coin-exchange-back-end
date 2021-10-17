@@ -1,4 +1,4 @@
-package org.bjsxt.constant;
+package com.bjsxt.constant;
 
 public class LoginConstant {
     public static final String ADMIN_TYPE = "admin_type";

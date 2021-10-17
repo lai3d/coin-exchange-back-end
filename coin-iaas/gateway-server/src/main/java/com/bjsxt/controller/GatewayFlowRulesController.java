@@ -1,4 +1,4 @@
-package org.bjsxt.controller;
+package com.bjsxt.controller;
 
 import com.alibaba.csp.sentinel.adapter.gateway.common.api.ApiDefinition;
 import com.alibaba.csp.sentinel.adapter.gateway.common.api.GatewayApiDefinitionManager;

@@ -1,4 +1,4 @@
-package org.bjsxt.config;
+package com.bjsxt.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

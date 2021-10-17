@@ -1,6 +1,6 @@
-package org.bjsxt.service.impl;
+package com.bjsxt.service.impl;
 
-import org.bjsxt.constant.LoginConstant;
+import com.bjsxt.constant.LoginConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;

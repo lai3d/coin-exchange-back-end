@@ -1,4 +1,4 @@
-package org.bjsxt.config;
+package com.bjsxt.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
