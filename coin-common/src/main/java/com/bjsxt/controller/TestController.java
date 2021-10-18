@@ -2,6 +2,7 @@ package com.bjsxt.controller;
 
 import com.bjsxt.model.R;
 import com.bjsxt.model.WebLog;
+import com.bjsxt.service.TestService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,6 +17,9 @@ public class TestController {
 
     @Autowired
     private RedisTemplate<String,Object> redisTemplate ;
+
+    @Autowired
+    private TestService testService;
 
     @GetMapping("/common/test")
     @ApiOperation(value = "测试方法", authorizations = {@Authorization("Authorization")})
@@ -42,5 +46,13 @@ public class TestController {
         webLog.setUsername("1110");
         redisTemplate.opsForValue().set("com.bjsxt.domain.WebLog", webLog);
         return R.ok("OK");
+    }
+
+    @GetMapping("/jetcache/test")
+    @ApiOperation(value = "jetcache缓存的测试",authorizations = {@Authorization("Authorization")})
+    public R<String> testJetCache(String username){
+        WebLog webLog = testService.get(username);
+        System.out.println(webLog);
+        return R.ok("OK") ; //
     }
 }
