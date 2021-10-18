@@ -6,8 +6,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class CoinCommonApplication {
+public class AdminServiceApplication {
+
     public static void main(String[] args) {
-        SpringApplication.run(CoinCommonApplication.class, args);
+        SpringApplication.run(AdminServiceApplication.class, args);
     }
 }
