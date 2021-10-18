@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
+//import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,8 +32,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private UserDetailsService userDetailsService;
 
-    @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
+//    @Autowired
+//    private RedisConnectionFactory redisConnectionFactory;
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
@@ -63,9 +63,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
         super.configure(endpoints);
     }
 
-    private TokenStore redisTokenStore() {
-        return new RedisTokenStore(redisConnectionFactory);
-    }
+//    private TokenStore redisTokenStore() {
+//        return new RedisTokenStore(redisConnectionFactory);
+//    }
 
     private TokenStore jwtTokenStore() {
         JwtTokenStore jwtTokenStore = new JwtTokenStore(jwtAccessTokenConverter());
