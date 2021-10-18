@@ -84,6 +84,13 @@ public class SysPrivilege {
     @ApiModelProperty(value="修改时间")
     private Date lastUpdateTime;
 
+    /**
+     * 标记当前的角色是否有该权限
+     */
+    @TableField(exist = false)
+    @ApiModelProperty(value="当前角色是否拥有这个权限")
+    private int own ;
+
     public static final String COL_ID = "id";
 
     public static final String COL_MENU_ID = "menu_id";
