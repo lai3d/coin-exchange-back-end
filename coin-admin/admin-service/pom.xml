@@ -28,6 +28,12 @@
             <artifactId>coin-common</artifactId>
             <version>1.0</version>
         </dependency>
+
+        <!--           阿里云对象存储-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alicloud-oss</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
