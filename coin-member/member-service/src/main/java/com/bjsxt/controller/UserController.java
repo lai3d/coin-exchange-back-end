@@ -4,10 +4,13 @@ package com.bjsxt.controller;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bjsxt.domain.User;
+import com.bjsxt.domain.UserAuthAuditRecord;
+import com.bjsxt.domain.UserAuthInfo;
 import com.bjsxt.model.R;
 import com.bjsxt.service.UserAuthAuditRecordService;
 import com.bjsxt.service.UserAuthInfoService;
 import com.bjsxt.service.UserService;
+import com.bjsxt.vo.UseAuthInfoVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -17,6 +20,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -140,5 +146,65 @@ public class UserController {
     ) {
         Page<User> userPage = userService.findByPage(page, mobile, userId, userName, realName, null, reviewsStatus);
         return R.ok(userPage);
+    }
+
+
+    /**
+     * 差询用户的认证详情
+     * {
+     * user:
+     * userAuthInfoList:[]
+     * userAuditRecordList:[]
+     * }
+     */
+    @GetMapping("/auth/info")
+    @ApiOperation(value = "查询用户的认证详情")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "用户的Id")
+    })
+    public R<UseAuthInfoVo> getUseAuthInfo(Long id) {
+
+        User user = userService.getById(id);
+        List<UserAuthAuditRecord> userAuthAuditRecordList = null;
+        List<UserAuthInfo> userAuthInfoList = null;
+        if (user != null) {
+            // 用户的审核记录
+            Integer reviewsStatus = user.getReviewsStatus();
+            if (reviewsStatus == null || reviewsStatus == 0) { // 待审核
+                userAuthAuditRecordList = Collections.emptyList(); // 用户没有审核记录
+                //
+                userAuthInfoList = userAuthInfoService.getUserAuthInfoByUserId(id);
+            } else {
+                userAuthAuditRecordList = userAuthAuditRecordService.getUserAuthAuditRecordList(id);
+                // 查询用户的认证详情列表-> 用户的身份信息
+                UserAuthAuditRecord userAuthAuditRecord = userAuthAuditRecordList.get(0);// 之前我们查询时,是按照认证的日志排序的,第0 个值,就是最近被认证的一个值
+                Long authCode = userAuthAuditRecord.getAuthCode(); // 认证的唯一标识
+                userAuthInfoList = userAuthInfoService.getUserAuthInfoByCode(authCode);
+            }
+        }
+        return R.ok(new UseAuthInfoVo(user, userAuthInfoList, userAuthAuditRecordList));
+    }
+
+
+    /**
+     * 审核的本质:
+     * 在于对一组图片(唯一Code)的认可,符合条件,审核通过
+     *
+     * @return
+     */
+    @PostMapping("/auths/status")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "用户的ID"),
+            @ApiImplicitParam(name = "authStatus", value = "用户的审核状态"),
+            @ApiImplicitParam(name = "authCode", value = "一组图片的唯一标识"),
+            @ApiImplicitParam(name = "remark", value = "审核拒绝的原因"),
+    })
+    public R updateUserAuthStatus(@RequestParam(required = true) Long id, @RequestParam(required = true) Byte authStatus, @RequestParam(required = true) Long authCode, String remark) {
+        // 审核: 1 修改user 里面的reviewStatus
+        // 2 在authAuditRecord 里面添加一条记录
+
+        userService.updateUserAuthStatus(id, authStatus, authCode, remark);
+
+        return R.ok();
     }
 }

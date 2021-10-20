@@ -36,7 +36,7 @@ public class UserAddressController {
             @ApiImplicitParam(name = "size" ,value = "每页显示的条数")
     })
     public R<Page<UserAddress>> findByPage(@ApiIgnore  Page<UserAddress> page ,Long userId){
-        page.addOrder(OrderItem.desc("last_update_time")) ;
+        page.addOrder(OrderItem.desc(UserAddress.COL_LAST_UPDATE_TIME)) ;
         Page<UserAddress> userAddressPage = userAddressService.findByPage(page,userId) ;
         return R.ok(userAddressPage) ;
     }
