@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberTestController {
 
     @ApiOperation(value = "这是一个测试接口",authorizations = {@Authorization("Authorization")})
-    @GetMapping("/test")
+    @GetMapping("/member/test")
     public R<String> test(){
         return R.ok("测试成功");
     }
