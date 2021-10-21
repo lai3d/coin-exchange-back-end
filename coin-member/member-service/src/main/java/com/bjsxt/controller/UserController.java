@@ -199,7 +199,8 @@ public class UserController {
             @ApiImplicitParam(name = "authCode", value = "一组图片的唯一标识"),
             @ApiImplicitParam(name = "remark", value = "审核拒绝的原因"),
     })
-    public R updateUserAuthStatus(@RequestParam(required = true) Long id, @RequestParam(required = true) Byte authStatus, @RequestParam(required = true) Long authCode, String remark) {
+    public R updateUserAuthStatus(@RequestParam(required = true) Long id, @RequestParam(required = true) Byte authStatus,
+                                  @RequestParam(required = true) Long authCode, String remark) {
         // 审核: 1 修改user 里面的reviewStatus
         // 2 在authAuditRecord 里面添加一条记录
 
