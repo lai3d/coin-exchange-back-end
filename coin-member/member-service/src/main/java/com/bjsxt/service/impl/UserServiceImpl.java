@@ -3,6 +3,8 @@ package com.bjsxt.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bjsxt.domain.UserAuthAuditRecord;
+import com.bjsxt.dto.UserDto;
+import com.bjsxt.mappers.UserDtoMapper;
 import com.bjsxt.service.UserAuthAuditRecordService;
 import com.bjsxt.service.UserAuthInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -10,17 +12,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bjsxt.domain.User;
 import com.bjsxt.mapper.UserMapper;
 import com.bjsxt.service.UserService;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 @Service
 @Slf4j
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService{
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     @Autowired
     private UserAuthAuditRecordService userAuthAuditRecordService;
@@ -94,4 +101,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userAuthAuditRecordService.save(userAuthAuditRecord);
     }
 
+    /**
+     * 通过用户的信息查询用户
+     *
+     * @param ids      用户的批量查询,用在我们给别人远程调用时批量获取用户的数据
+     * @return
+     */
+    @Override
+    public List<UserDto> getBasicUsers(List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+        List<User> list = list(new LambdaQueryWrapper<User>().in(User::getId, ids));
+        if (CollectionUtils.isEmpty(list)) {
+            return Collections.emptyList();
+        }
+        // 将user->userDto
+        List<UserDto> userDtos = UserDtoMapper.INSTANCE.convert2Dto(list);
+        return userDtos;
+    }
 }

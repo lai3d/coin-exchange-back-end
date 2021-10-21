@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bjsxt.domain.User;
 import com.bjsxt.domain.UserAuthAuditRecord;
 import com.bjsxt.domain.UserAuthInfo;
+import com.bjsxt.dto.UserDto;
+import com.bjsxt.feign.UserServiceFeign;
 import com.bjsxt.model.R;
 import com.bjsxt.service.UserAuthAuditRecordService;
 import com.bjsxt.service.UserAuthInfoService;
@@ -23,11 +25,12 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 @Api(tags = "会员的控制器")
-public class UserController {
+public class UserController implements UserServiceFeign {
 
 
     @Autowired
@@ -207,5 +210,17 @@ public class UserController {
         userService.updateUserAuthStatus(id, authStatus, authCode, remark);
 
         return R.ok();
+    }
+
+    /**
+     * 用于admin-service 里面远程调用member-service
+     *
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<UserDto>  getBasicUsers(List<Long> ids) {
+        List<UserDto> userDtos = userService.getBasicUsers(ids);
+        return userDtos;
     }
 }

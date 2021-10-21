@@ -26,7 +26,7 @@ public class OAuth2FeignConfig implements RequestInterceptor {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         String header = null ;
         if (requestAttributes == null) {
-//            log.info("没有请求的上下文,故无法进行token的传递");
+            log.info("没有请求的上下文,故无法进行token的传递");
             header = "bearer "+ Constants.INSIDE_TOKEN ;
         }else{
             HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
@@ -35,7 +35,7 @@ public class OAuth2FeignConfig implements RequestInterceptor {
 
         if (!StringUtils.isEmpty(header)) {
             template.header(HttpHeaders.AUTHORIZATION, header);
-//            log.info("本次token传递成功,token的值为:{}", header);
+            log.info("本次token传递成功,token的值为:{}", header);
         }
     }
 }

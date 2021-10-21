@@ -3,6 +3,11 @@ package com.bjsxt.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bjsxt.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bjsxt.dto.UserDto;
+
+import java.util.List;
+import java.util.Map;
+
 public interface UserService extends IService<User>{
 
     /**
@@ -37,5 +42,14 @@ public interface UserService extends IService<User>{
      * @param remark     拒绝的原因
      */
     void updateUserAuthStatus(Long id, Byte authStatus, Long authCode, String remark);
+
+    /**
+     * 通过用户的Id 批量查询用户的基础信息
+     *
+     * @param ids
+     * @return
+     */
+    List<UserDto> getBasicUsers(List<Long> ids);
+//    Map<Long, UserDto> getBasicUsers(List<Long> ids, String userName, String mobile);
 
 }
