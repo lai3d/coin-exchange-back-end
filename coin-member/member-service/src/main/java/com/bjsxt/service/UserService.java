@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bjsxt.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bjsxt.dto.UserDto;
+import com.bjsxt.model.RegisterParam;
 
 import java.util.List;
 import java.util.Map;
@@ -51,5 +52,13 @@ public interface UserService extends IService<User>{
      */
     List<UserDto> getBasicUsers(List<Long> ids);
 //    Map<Long, UserDto> getBasicUsers(List<Long> ids, String userName, String mobile);
+
+    /**
+     * 用户的注册
+     *
+     * @param registerParam 注册的表单参数
+     * @return
+     */
+    boolean register(RegisterParam registerParam);
 
 }

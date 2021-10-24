@@ -9,6 +9,7 @@ import com.bjsxt.domain.UserAuthInfo;
 import com.bjsxt.dto.UserDto;
 import com.bjsxt.feign.UserServiceFeign;
 import com.bjsxt.model.R;
+import com.bjsxt.model.RegisterParam;
 import com.bjsxt.service.UserAuthAuditRecordService;
 import com.bjsxt.service.UserAuthInfoService;
 import com.bjsxt.service.UserService;
@@ -222,5 +223,15 @@ public class UserController implements UserServiceFeign {
     public List<UserDto>  getBasicUsers(List<Long> ids) {
         List<UserDto> userDtos = userService.getBasicUsers(ids);
         return userDtos;
+    }
+
+    @PostMapping("/register")
+    @ApiOperation(value = "用户的注册")
+    public R register(@RequestBody RegisterParam registerParam) {
+        boolean isOk = userService.register(registerParam);
+        if (isOk) {
+            return R.ok();
+        }
+        return R.fail("注册失败");
     }
 }
