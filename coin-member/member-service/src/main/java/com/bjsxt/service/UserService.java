@@ -5,6 +5,7 @@ import com.bjsxt.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bjsxt.dto.UserDto;
 import com.bjsxt.model.RegisterParam;
+import com.bjsxt.model.UserAuthForm;
 
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,23 @@ public interface UserService extends IService<User>{
      * @param remark     拒绝的原因
      */
     void updateUserAuthStatus(Long id, Byte authStatus, Long authCode, String remark);
+
+    /**
+     * 用户的实名认证
+     *
+     * @param id           用户的Id
+     * @param userAuthForm 认证的表单数据
+     * @return 认证的结果
+     */
+    boolean identifyVerify(Long id, UserAuthForm userAuthForm);
+
+    /**
+     * 获取该用户邀请的用户列表
+     *
+     * @param userId 用户的Id
+     * @return
+     */
+    List<User> getUserInvites(Long userId);
 
     /**
      * 通过用户的Id 批量查询用户的基础信息

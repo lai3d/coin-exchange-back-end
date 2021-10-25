@@ -10,6 +10,7 @@ import com.bjsxt.dto.UserDto;
 import com.bjsxt.feign.UserServiceFeign;
 import com.bjsxt.model.R;
 import com.bjsxt.model.RegisterParam;
+import com.bjsxt.model.UserAuthForm;
 import com.bjsxt.service.UserAuthAuditRecordService;
 import com.bjsxt.service.UserAuthInfoService;
 import com.bjsxt.service.UserService;
@@ -20,6 +21,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -213,6 +215,32 @@ public class UserController implements UserServiceFeign {
         return R.ok();
     }
 
+    @GetMapping("/current/info")
+    @ApiOperation(value = "获取当前登录用户对象的信息")
+    public R<User> currentUserInfo() {
+        String idStr = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        User user = userService.getById(Long.valueOf(idStr));
+        user.setPassword("****");
+        user.setPaypassword("***");
+        user.setAccessKeyId("****");
+        user.setAccessKeySecret("******");
+        return R.ok(user);
+    }
+
+    @PostMapping("/authAccount")
+    @ApiOperation(value = "用户的实名认证")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userAuthForm", value = "userAuthFormjson数据")
+    })
+    public R identifyCheck(@RequestBody UserAuthForm userAuthForm) {
+        String idStr = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        boolean isOk = userService.identifyVerify(Long.valueOf(idStr), userAuthForm);
+        if (isOk) {
+            return R.ok();
+        }
+        return R.fail("认证失败");
+    }
+
     /**
      * 用于admin-service 里面远程调用member-service
      *
@@ -223,6 +251,14 @@ public class UserController implements UserServiceFeign {
     public List<UserDto>  getBasicUsers(List<Long> ids) {
         List<UserDto> userDtos = userService.getBasicUsers(ids);
         return userDtos;
+    }
+
+    @GetMapping("/invites")
+    @ApiOperation(value = "用户的邀请列表")
+    public R<List<User>> getUserInvites() {
+        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        List<User> users = userService.getUserInvites(userId);
+        return R.ok(users);
     }
 
     @PostMapping("/register")

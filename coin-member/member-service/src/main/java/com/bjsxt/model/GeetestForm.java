@@ -40,6 +40,7 @@ public class GeetestForm {
         String statusStr = statusObject.toString();
         status = Integer.valueOf(statusStr).intValue();
         userId = redisTemplate.opsForValue().get(GeetestLib.GEETEST_SERVER_USER_KEY + ":" + this.getUuid()).toString();
+        log.info("========= userId: " + userId);
         GeetestLibResult result = null;
         if (status == 1) {
             /*

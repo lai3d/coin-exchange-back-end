@@ -4,11 +4,13 @@ import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.bjsxt.config.IdAutoConfiguration;
 import com.bjsxt.domain.UserAuthAuditRecord;
 import com.bjsxt.dto.UserDto;
 import com.bjsxt.geetest.GeetestLib;
 import com.bjsxt.mappers.UserDtoMapper;
 import com.bjsxt.model.RegisterParam;
+import com.bjsxt.model.UserAuthForm;
 import com.bjsxt.service.UserAuthAuditRecordService;
 import com.bjsxt.service.UserAuthInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +20,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.io.Serializable;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,6 +32,7 @@ import com.bjsxt.domain.User;
 import com.bjsxt.mapper.UserMapper;
 import com.bjsxt.service.UserService;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -114,6 +119,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     /**
+     * 获取该用户邀请的用户列表
+     *
+     * @param userId 用户的Id
+     * @return
+     */
+    @Override
+    public List<User> getUserInvites(Long userId) {
+        List<User> list = list(new LambdaQueryWrapper<User>().eq(User::getDirectInviteid, userId));
+        if (CollectionUtils.isEmpty(list)) {
+            return Collections.emptyList();
+        }
+        list.forEach(user -> {
+            user.setPaypassword("*********");
+            user.setPassword("********");
+            user.setAccessKeyId("*********");
+            user.setAccessKeySecret("*********");
+        });
+        return list;
+    }
+
+    /**
      * 通过用户的信息查询用户
      *
      * @param ids      用户的批量查询,用在我们给别人远程调用时批量获取用户的数据
@@ -184,5 +210,84 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         }
         return user;
+    }
+
+//
+//    @Override
+//    public User getById(Serializable id) {
+//        User user = super.getById(id);
+//        if (user == null) {
+//            throw new IllegalArgumentException("请输入正确的用户Id");
+//        }
+//        Byte seniorAuthStatus = null; // 用户的高级认证状态
+//        String seniorAuthDesc = "";// 用户的高级认证未通过,原因
+//        Integer reviewsStatus = user.getReviewsStatus(); // 用户被审核的状态 1通过,2拒绝,0,待审核"
+//        if (reviewsStatus == null) { //为null 时,代表用户的资料没有上传
+//            seniorAuthStatus = 3;
+//            seniorAuthDesc = "资料未填写";
+//        } else {
+//            switch (reviewsStatus) {
+//                case 1:
+//                    seniorAuthStatus = 1;
+//                    seniorAuthDesc = "审核通过";
+//                    break;
+//                case 2:
+//                    seniorAuthStatus = 2;
+//                    // 查询被拒绝的原因--->审核记录里面的
+//                    // 时间排序,
+//                    List<UserAuthAuditRecord> userAuthAuditRecordList = userAuthAuditRecordService.getUserAuthAuditRecordList(user.getId());
+//                    if (!CollectionUtils.isEmpty(userAuthAuditRecordList)) {
+//                        UserAuthAuditRecord userAuthAuditRecord = userAuthAuditRecordList.get(0);
+//                        seniorAuthDesc = userAuthAuditRecord.getRemark();
+//                    }
+////                    seniorAuthDesc = "原因未知"; bug所在
+//                    break;
+//                case 0:
+//                    seniorAuthStatus = 0;
+//                    seniorAuthDesc = "等待审核";
+//                    break;
+//
+//            }
+//        }
+//        user.setSeniorAuthStatus(seniorAuthStatus);
+//        user.setSeniorAuthDesc(seniorAuthDesc);
+//        return user;
+//    }
+
+    /**
+     * 用户的实名认证
+     *
+     * @param id           用户的Id
+     * @param userAuthForm 认证的表单数据
+     * @return 认证的结果
+     */
+    @Override
+    public boolean identifyVerify(Long id, UserAuthForm userAuthForm) {
+        User user = getById(id);
+        Assert.notNull(user, "认证的用户不存在");
+        Byte authStatus = user.getAuthStatus();
+        if (!authStatus.equals((byte) 0)) {
+            throw new IllegalArgumentException("该用户已经认证成功了");
+        }
+        // 执行认证
+        checkForm(userAuthForm); // 极验
+        // 实名认证
+        boolean check = IdAutoConfiguration.check(userAuthForm.getRealName(), userAuthForm.getIdCard());
+        if (!check) {
+            throw new IllegalArgumentException("该用户信息错误,请检查");
+        }
+
+        // 设置用户的认证属性
+        user.setAuthtime(new Date());
+        user.setAuthStatus((byte) 1);
+        user.setRealName(userAuthForm.getRealName());
+        user.setIdCard(userAuthForm.getIdCard());
+        user.setIdCardType(userAuthForm.getIdCardType());
+
+        return updateById(user);
+    }
+
+    private void checkForm(UserAuthForm userAuthForm) {
+        userAuthForm.check(geetestLib, redisTemplate);
     }
 }
